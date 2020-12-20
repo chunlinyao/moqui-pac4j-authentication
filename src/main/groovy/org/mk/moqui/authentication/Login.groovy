@@ -72,6 +72,7 @@ class Login {
         if (clients.size() < 1) {
             ec.logger.warn('No identity clients configured for moqui-pac4j-authentication')
             errorRedirect(ec)
+            return
         }
 
         try {
@@ -132,7 +133,7 @@ class Login {
         ec.artifactExecution.disableAuthz()
         DefaultLogoutLogic logout = new DefaultLogoutLogic()
         logout.setProfileManagerFactory(getProfileManagerFactory(ec))
-        def loginUrl = "${getMoquiUrl(ec)}/Login/Local"
+        def loginUrl = "${getMoquiUrl(ec)}/Login"
 
         try {
             logout.perform(

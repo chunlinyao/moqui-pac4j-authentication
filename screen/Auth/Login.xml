@@ -14,8 +14,11 @@
 
     <pre-actions>
         <!-- Redirect user to root if already signed in -->
-        <script>if (ec.user.userId) sri.sendRedirectAndStopRender('/')</script>
-        <service-call name="pac4j.AuthenticationServices.perform#Login" />
+        <if condition="ec.user.userId">
+            <then><script>if (ec.user.userId) sri.sendRedirectAndStopRender('/')</script></then>
+            <else><service-call name="pac4j.AuthenticationServices.perform#Login" /></else>
+        </if>
+
     </pre-actions>
     <widgets></widgets>
 </screen>
