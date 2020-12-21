@@ -27,7 +27,17 @@ class MoquiProfileManager extends ProfileManager<CommonProfile> {
 
         try {
             // TODO: Make username/email configurable
-            ((UserFacadeImpl) ec.user).internalLoginUser(profile.username)
+            def username = profile.username
+            if (!username) {
+                username = profile.attributes.get("preferred_username")
+            }
+            if (!username) {
+                username = profile.attributes.get("email")
+            }
+            if (!username) {
+                ec.logger.error("can not found username from profile.")
+            }
+            ((UserFacadeImpl) ec.user).internalLoginUser(username)
         } catch (final AuthenticationException e) {
             super.remove(saveInSession)
             throw e

@@ -2,6 +2,7 @@ package org.mk.moqui.authentication
 
 import groovy.transform.CompileStatic
 import org.moqui.context.ExecutionContext
+import org.moqui.context.NotificationMessage
 import org.moqui.entity.EntityFacade
 import org.pac4j.core.client.Client
 import org.pac4j.core.config.Config

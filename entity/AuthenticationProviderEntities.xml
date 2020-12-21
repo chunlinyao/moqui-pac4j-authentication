@@ -5,13 +5,13 @@
     <entity entity-name="AuthenticationClient" package="mk.authentication" short-alias="clients">
         <field name="clientId" type="id" is-pk="true"/>
         <field name="name" type="text-short" />
-        <field name="enabled" type="text-indicator" default="N" />
+        <field name="enabled" type="text-indicator" default="'N'" />
     </entity>
 
     <entity entity-name="OidcAuthenticationClient" package="mk.authentication">
         <field name="clientId" type="id" is-pk="true" />
         <field name="id" type="text-short" />
-        <field name="secret" type="text-short" />
+        <field name="secret" type="text-medium" />
         <field name="discoveryUri" type="text-medium" />
         <field name="preferredJwsAlgorithm" type="text-short" />
         <field name="useNonce" type="text-indicator" />
