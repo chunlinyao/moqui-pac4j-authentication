@@ -28,6 +28,7 @@ class Login {
 
     static Config globalConfig
     static List<AuthenticationClientFactory> clientFactories = [
+            new CasClientFactory() as AuthenticationClientFactory,
             new OidcClientFactory() as AuthenticationClientFactory
     ]
 

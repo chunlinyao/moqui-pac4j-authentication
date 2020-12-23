@@ -5,6 +5,7 @@ import org.moqui.impl.context.ExecutionContextImpl
 import org.moqui.impl.context.UserFacadeImpl
 import org.moqui.impl.util.MoquiShiroRealm
 import org.moqui.context.ExecutionContext
+import org.pac4j.cas.profile.CasProfile
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
@@ -27,21 +28,29 @@ class MoquiProfileManager extends ProfileManager<CommonProfile> {
 
         try {
             // TODO: Make username/email configurable
-            def username = profile.username
-            if (!username) {
-                username = profile.attributes.get("preferred_username")
-            }
-            if (!username) {
-                username = profile.attributes.get("email")
-            }
-            if (!username) {
-                ec.logger.error("can not found username from profile.")
-            }
+            Object username = getUserName(profile)
             ((UserFacadeImpl) ec.user).internalLoginUser(username)
         } catch (final AuthenticationException e) {
             super.remove(saveInSession)
             throw e
         }
+    }
+
+    private Object getUserName(CommonProfile profile) {
+        def username = profile.username
+        if (!username) {
+            username = profile.attributes.get("preferred_username")
+        }
+        if (!username) {
+            username = profile.attributes.get("email")
+        }
+        if (!username) {
+            username = profile.id
+        }
+        if (!username) {
+            ec.logger.error("can not found username from profile.")
+        }
+        username
     }
 
     @Override

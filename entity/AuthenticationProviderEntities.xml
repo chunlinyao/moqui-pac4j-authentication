@@ -18,4 +18,11 @@
 
         <relationship type="one" related="mk.authentication.AuthenticationClient" />
     </entity>
+    <entity entity-name="CasAuthenticationClient" package="mk.authentication">
+        <field name="clientId" type="id" is-pk="true" />
+        <field name="loginUrl" type="text-medium" not-null="true" />
+        <field name="prefixUrl" type="text-medium" not-null="true" />
+
+        <relationship type="one" related="mk.authentication.AuthenticationClient" />
+    </entity>
 </entities>

@@ -26,7 +26,6 @@
                 <log message="Deleting key ${apiKey}"/>
                 <entity-delete value-field="key" />
             </if>
-            <log message="${ec.user.userId}"/>
             <if condition="ec.user.userId">
                 <script>ec.user.logoutUser()</script>
             </if>
