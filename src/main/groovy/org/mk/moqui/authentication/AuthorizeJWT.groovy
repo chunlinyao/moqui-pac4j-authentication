@@ -4,6 +4,7 @@ import com.nimbusds.jose.JOSEException
 import com.nimbusds.jose.crypto.factories.DefaultJWSVerifierFactory
 import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.KeyConverter
+import com.nimbusds.jose.util.DefaultResourceRetriever
 import com.nimbusds.jwt.SignedJWT
 import com.nimbusds.jwt.proc.BadJWTException
 import com.nimbusds.jwt.proc.DefaultJWTClaimsVerifier
@@ -11,7 +12,6 @@ import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata
 import org.moqui.entity.EntityCondition
 import org.moqui.impl.context.ExecutionContextImpl
 import org.pac4j.oidc.client.OidcClient
-import com.nimbusds.jose.util.DefaultResourceRetriever
 
 import java.sql.Timestamp
 
@@ -25,13 +25,13 @@ static void saveApiKey(ExecutionContextImpl eci, String key, long exp) {
     def existing = eci.entity.find('moqui.security.UserLoginKey').condition([userId: userId, loginKey: hashedKey]).one()
     if (!existing) {
         eci.serviceFacade.sync().name("create", "moqui.security.UserLoginKey")
-            .parameters([loginKey: hashedKey, userId: userId, fromDate: fromDate, thruDate: new Timestamp(exp)])
-            .disableAuthz().requireNewTransaction(true).call()
+                .parameters([loginKey: hashedKey, userId: userId, fromDate: fromDate, thruDate: new Timestamp(exp)])
+                .disableAuthz().requireNewTransaction(true).call()
     }
 
     // clean out expired keys
     eci.entity.find("moqui.security.UserLoginKey").condition("userId", userId)
-        .condition("thruDate", EntityCondition.LESS_THAN, fromDate).disableAuthz().deleteAll()
+            .condition("thruDate", EntityCondition.LESS_THAN, fromDate).disableAuthz().deleteAll()
 }
 
 static void sendUnauthorized(ExecutionContextImpl eci) {
@@ -86,7 +86,7 @@ try {
         eci.logger.warn("${e.message} for ${jwt.JWTClaimsSet.getStringClaim("preferred_username")}")
     }
     sendUnauthorized(eci)
-} catch(Exception err) {
+} catch (Exception err) {
     eci.logger.error('There was a problem parsing JWT request')
     err.printStackTrace()
     sendUnauthorized(eci)

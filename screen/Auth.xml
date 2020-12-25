@@ -2,11 +2,11 @@
 
 <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.1.xsd"
         require-authentication="false">
-    <transition name="callback" method="get" read-only="true">
+    <transition name="callback" read-only="true" require-session-token="false">
         <service-call name="pac4j.AuthenticationServices.perform#Callback"/>
         <default-response type="screen-last"/>
     </transition>
-    <transition name="logout">
+    <transition name="logout" read-only="true">
         <actions>
             <service-call name="pac4j.AuthenticationServices.perform#Logout" />
         </actions>

@@ -1,11 +1,7 @@
 package org.mk.moqui.authentication
 
-import org.moqui.impl.context.ExecutionContextFactoryImpl
-import org.moqui.impl.context.ExecutionContextImpl
-import org.moqui.impl.context.UserFacadeImpl
-import org.moqui.impl.util.MoquiShiroRealm
 import org.moqui.context.ExecutionContext
-import org.pac4j.cas.profile.CasProfile
+import org.moqui.impl.context.UserFacadeImpl
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
@@ -17,6 +13,7 @@ import javax.naming.AuthenticationException
  */
 class MoquiProfileManager extends ProfileManager<CommonProfile> {
     ExecutionContext ec
+
     MoquiProfileManager(WebContext context, ExecutionContext ec) {
         super(context)
         this.ec = ec

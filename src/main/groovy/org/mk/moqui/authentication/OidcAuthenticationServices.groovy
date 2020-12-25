@@ -10,7 +10,6 @@ import com.nimbusds.jwt.proc.BadJWTException
 import com.nimbusds.jwt.proc.DefaultJWTClaimsVerifier
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata
 import org.moqui.context.ExecutionContext
-import org.moqui.impl.context.ExecutionContextImpl
 import org.moqui.impl.context.UserFacadeImpl
 import org.pac4j.core.client.Client
 import org.pac4j.oidc.client.OidcClient

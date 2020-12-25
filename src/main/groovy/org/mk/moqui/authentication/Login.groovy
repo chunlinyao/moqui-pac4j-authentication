@@ -2,7 +2,6 @@ package org.mk.moqui.authentication
 
 import groovy.transform.CompileStatic
 import org.moqui.context.ExecutionContext
-import org.moqui.context.NotificationMessage
 import org.moqui.entity.EntityFacade
 import org.pac4j.core.client.Client
 import org.pac4j.core.config.Config
@@ -18,8 +17,6 @@ import org.pac4j.core.http.adapter.J2ENopHttpActionAdapter
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
 
-import javax.servlet.http.HttpServletResponse
-import javax.servlet.http.WebConnection
 import java.util.function.Function
 
 @CompileStatic
@@ -33,7 +30,7 @@ class Login {
     ]
 
     static List<Client> getClients(EntityFacade ef) {
-        List<List<Client>> list = clientFactories.collect({factory -> factory.buildClients(ef)})
+        List<List<Client>> list = clientFactories.collect({ factory -> factory.buildClients(ef) })
         return list.flatten() as List<Client>
     }
 
@@ -64,7 +61,7 @@ class Login {
     }
 
     static login(ExecutionContext ec) {
-        ec.artifactExecution.disableAuthz()
+        def disabled = ec.artifactExecution.disableAuthz()
         def logger = ec.getLogger()
 
         DefaultSecurityLogic logic = new DefaultSecurityLogic()
@@ -93,7 +90,9 @@ class Login {
             ec.logger.log(200, "Encounter login error", e)
             errorRedirect(ec)
         } finally {
-            ec.artifactExecution.enableAuthz()
+            if (!disabled) {
+                ec.artifactExecution.enableAuthz()
+            }
         }
     }
 
@@ -106,7 +105,7 @@ class Login {
     }
 
     static void callback(ExecutionContext ec) {
-        ec.artifactExecution.disableAuthz()
+        def disabled = ec.artifactExecution.disableAuthz()
         def logger = ec.getLogger()
         def context = buildContext(ec)
 
@@ -117,7 +116,7 @@ class Login {
                     context,
                     getConfig(ec),
                     J2ENopHttpActionAdapter.INSTANCE,
-                null,
+                    null,
                     true,
                     false,
                     true,
@@ -127,29 +126,33 @@ class Login {
         catch (Exception e) {
             e.printStackTrace()
         } finally {
-            ec.artifactExecution.enableAuthz()
+            if (!disabled) {
+                ec.artifactExecution.enableAuthz()
+            }
         }
     }
 
     static void logout(ExecutionContext ec) {
-        ec.artifactExecution.disableAuthz()
+        def disabled = ec.artifactExecution.disableAuthz()
         DefaultLogoutLogic logout = new DefaultLogoutLogic()
         logout.setProfileManagerFactory(getProfileManagerFactory(ec))
         def loginUrl = "${getMoquiUrl(ec)}/Login"
 
         try {
             logout.perform(
-                buildContext(ec),
-                getConfig(ec),
-                J2ENopHttpActionAdapter.INSTANCE,
-                loginUrl,
-                '/',
-                true,
-                true,
-                true
+                    buildContext(ec),
+                    getConfig(ec),
+                    J2ENopHttpActionAdapter.INSTANCE,
+                    loginUrl,
+                    '/',
+                    true,
+                    true,
+                    true
             )
         } finally {
-            ec.artifactExecution.enableAuthz()
+            if (!disabled) {
+                ec.artifactExecution.enableAuthz()
+            }
         }
     }
 }
