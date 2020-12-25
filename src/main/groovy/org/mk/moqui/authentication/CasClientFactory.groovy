@@ -5,8 +5,8 @@ import groovy.transform.CompileStatic
 import org.moqui.entity.EntityFacade
 import org.pac4j.cas.client.CasClient
 import org.pac4j.cas.config.CasConfiguration
-import org.pac4j.cas.logout.DefaultCasLogoutHandler
 import org.pac4j.core.client.Client
+import org.pac4j.core.logout.handler.DefaultLogoutHandler
 
 import java.sql.Timestamp
 import java.util.concurrent.ConcurrentHashMap
@@ -30,7 +30,7 @@ class CasClientFactory implements AuthenticationClientFactory {
                         clientMap.compute(entity.clientId as String, { k, v ->
                             if (v == null || v.lastUpdatedStamp != entity.lastUpdatedStamp) {
                                 CasConfiguration config = new CasConfiguration()
-                                def handler = new DefaultCasLogoutHandler()
+                                def handler = new DefaultLogoutHandler()
                                 handler.setDestroySession(true)
                                 config.setLogoutHandler(handler)
                                 config.setLoginUrl(entity.loginUrl as String)

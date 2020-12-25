@@ -3,25 +3,23 @@ package org.mk.moqui.authentication
 import groovy.transform.CompileStatic
 import org.moqui.context.ExecutionContext
 import org.moqui.entity.EntityFacade
+import org.pac4j.core.authorization.authorizer.DefaultAuthorizers
 import org.pac4j.core.client.Client
 import org.pac4j.core.config.Config
-import org.pac4j.core.context.DefaultAuthorizers
-import org.pac4j.core.context.J2EContext
+import org.pac4j.core.context.JEEContext
 import org.pac4j.core.context.WebContext
-import org.pac4j.core.context.session.J2ESessionStore
+import org.pac4j.core.context.session.JEESessionStore
 import org.pac4j.core.engine.DefaultCallbackLogic
 import org.pac4j.core.engine.DefaultLogoutLogic
 import org.pac4j.core.engine.DefaultSecurityLogic
 import org.pac4j.core.engine.SecurityGrantedAccessAdapter
-import org.pac4j.core.http.adapter.J2ENopHttpActionAdapter
-import org.pac4j.core.profile.CommonProfile
-import org.pac4j.core.profile.ProfileManager
-
-import java.util.function.Function
+import org.pac4j.core.http.adapter.JEEHttpActionAdapter
+import org.pac4j.core.profile.UserProfile
+import org.pac4j.core.profile.factory.ProfileManagerFactory
 
 @CompileStatic
 class Login {
-    static final J2ESessionStore sessionStore = new J2ESessionStore()
+    static final JEESessionStore sessionStore = new JEESessionStore()
 
     static Config globalConfig
     static List<AuthenticationClientFactory> clientFactories = [
@@ -45,19 +43,19 @@ class Login {
                 .collect { entity -> entity.clientId as String }
     }
 
-    static J2EContext buildContext(ExecutionContext ec) {
+    static JEEContext buildContext(ExecutionContext ec) {
         def request = ec.getWeb().getRequest()
         def response = ec.getWeb().getResponse()
 
-        return new J2EContext(request, response, sessionStore)
+        return new JEEContext(request, response, sessionStore)
     }
 
     static String getMoquiUrl(ExecutionContext ec) {
         return ec.web.getWebappRootUrl(true, true)
     }
 
-    static Function getProfileManagerFactory(ExecutionContext ec) {
-        return { WebContext ctx -> new MoquiProfileManager(ctx, ec) } as Function<WebContext, ProfileManager>
+    static ProfileManagerFactory getProfileManagerFactory(ExecutionContext ec) {
+        return { WebContext ctx -> new MoquiProfileManager(ctx, ec) } as ProfileManagerFactory
     }
 
     static login(ExecutionContext ec) {
@@ -79,7 +77,7 @@ class Login {
                     buildContext(ec),
                     getConfig(ec),
                     new MoquiAccessGrantedAdapter(),
-                    J2ENopHttpActionAdapter.INSTANCE,
+                    JEEHttpActionAdapter.INSTANCE,
                     clients.join(','),
                     DefaultAuthorizers.IS_AUTHENTICATED,
                     '',
@@ -115,7 +113,7 @@ class Login {
             def result = callback.perform(
                     context,
                     getConfig(ec),
-                    J2ENopHttpActionAdapter.INSTANCE,
+                    JEEHttpActionAdapter.INSTANCE,
                     null,
                     true,
                     false,
@@ -136,14 +134,14 @@ class Login {
         def disabled = ec.artifactExecution.disableAuthz()
         DefaultLogoutLogic logout = new DefaultLogoutLogic()
         logout.setProfileManagerFactory(getProfileManagerFactory(ec))
-        def loginUrl = "${getMoquiUrl(ec)}/Login"
+        def defaultUrl = "${getMoquiUrl(ec)}/"
 
         try {
             logout.perform(
                     buildContext(ec),
                     getConfig(ec),
-                    J2ENopHttpActionAdapter.INSTANCE,
-                    loginUrl,
+                    JEEHttpActionAdapter.INSTANCE,
+                    defaultUrl,
                     '/',
                     true,
                     true,
@@ -158,7 +156,9 @@ class Login {
 }
 
 class MoquiAccessGrantedAdapter implements SecurityGrantedAccessAdapter<Object, WebContext> {
-    Object adapt(WebContext context, Collection<CommonProfile> profiles, Object... parameters) {
+
+    @Override
+    Object adapt(WebContext context, Collection<UserProfile> profiles, Object... parameters) throws Exception {
         return null
     }
 }
